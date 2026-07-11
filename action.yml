@@ -1,0 +1,66 @@
+name: supply-gate
+description: Supply-chain gate — pip-audit, CycloneDX SBOM, Trivy, CVSS policy
+author: smae
+branding:
+  icon: shield
+  color: green
+
+inputs:
+  path:
+    description: Path to the Python project to audit
+    required: false
+    default: "."
+  image:
+    description: Container image to scan with Trivy. Empty skips the image scan.
+    required: false
+    default: ""
+  threshold:
+    description: Fail if any finding has CVSS greater than or equal to this value
+    required: false
+    default: "8.0"
+  allowlist:
+    description: Comma-separated vulnerability IDs to ignore (CVE, GHSA, PYSEC, …)
+    required: false
+    default: ""
+  format:
+    description: Primary stdout format (sarif, json, markdown)
+    required: false
+    default: "markdown"
+
+runs:
+  using: composite
+  steps:
+    - name: Install supply-gate and pip-audit
+      shell: bash
+      run: |
+        python3 -m pip install --upgrade pip
+        python3 -m pip install "${{ github.action_path }}" pip-audit
+        echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+    - name: Install Trivy
+      shell: bash
+      run: |
+        curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh \
+          | sudo sh -s -- -b /usr/local/bin
+        trivy --version
+
+    - name: Run supply-gate
+      shell: bash
+      run: |
+        set -euo pipefail
+        args=(
+          run
+          --path "${{ inputs.path }}"
+          --threshold "${{ inputs.threshold }}"
+          --format "${{ inputs.format }}"
+          --sarif-out supply-gate.sarif
+          --summary-out supply-gate.md
+          --sbom-out sbom.cdx.json
+        )
+        if [ -n "${{ inputs.image }}" ]; then
+          args+=(--image "${{ inputs.image }}" --on-missing-trivy fail)
+        fi
+        if [ -n "${{ inputs.allowlist }}" ]; then
+          args+=(--allowlist "${{ inputs.allowlist }}")
+        fi
+        supply-gate "${args[@]}"
