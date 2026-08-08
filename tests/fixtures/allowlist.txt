@@ -1,0 +1,3 @@
+# suppress the critical pip-audit finding in tests
+GHSA-0000-0000-0001
+CVE-0000-9999
