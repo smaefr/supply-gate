@@ -1,0 +1,35 @@
+{
+  "dependencies": [
+    {
+      "name": "critical-pkg",
+      "version": "1.0.0",
+      "vulns": [
+        {
+          "id": "GHSA-0000-0000-0001",
+          "aliases": ["CVE-0000-0001", "PYSEC-0000-1"],
+          "description": "A high-severity vulnerability in critical-pkg.",
+          "fix_versions": ["1.1.0"],
+          "cvss": 9.8
+        }
+      ]
+    },
+    {
+      "name": "mild-pkg",
+      "version": "0.4.0",
+      "vulns": [
+        {
+          "id": "PYSEC-0000-2",
+          "aliases": ["CVE-0000-0002"],
+          "description": "A medium-severity vulnerability in mild-pkg.",
+          "fix_versions": ["0.5.0"],
+          "cvss_v3": {"score": 4.0}
+        }
+      ]
+    },
+    {
+      "name": "clean-pkg",
+      "version": "3.2.1",
+      "vulns": []
+    }
+  ]
+}
