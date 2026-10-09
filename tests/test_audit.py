@@ -96,11 +96,12 @@ def test_run_pip_audit_exit_1_still_parses(
     assert any(item.cvss == 9.8 for item in findings)
 
 
-def test_run_pip_audit_project_flag_and_exit_2(
+def test_run_pip_audit_project_path_and_exit_2(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
     def fake_run(cmd, **kwargs):  # noqa: ANN001
-        assert "--project" in cmd
+        assert "--project" not in cmd
+        assert cmd[-1] == str(tmp_path)
         return subprocess.CompletedProcess(cmd, 2, stdout="", stderr="boom")
 
     monkeypatch.setattr("supply_gate.audit.shutil.which", lambda _: "/usr/bin/pip-audit")

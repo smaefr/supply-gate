@@ -78,7 +78,7 @@ def run_pip_audit(project: Path) -> list[Finding]:
     if requirements.is_file():
         cmd.extend(["-r", str(requirements)])
     else:
-        cmd.extend(["--project", str(project)])
+        cmd.append(str(project))
     try:
         completed = subprocess.run(
             cmd,
